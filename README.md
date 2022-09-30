@@ -4,16 +4,19 @@
 
 ## QuickStart
 
-<!-- add docs here for user -->
+<!-- 使用说明 -->
 
-see [egg docs][egg] for more detail.
+/idSearch：传入参数两个数组，数组中是各个点的信息，求出的是距离矩阵
+/msgSearch: 传入两个点的经纬度，求出两点之间的路径距离
+
+
 
 ### Development
 
 ```bash
 $ npm i
 $ npm run dev
-$ open http://localhost:7001/
+$ open http://localhost:7002/
 ```
 
 ### Deploy
