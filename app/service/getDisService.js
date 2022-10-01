@@ -1,26 +1,29 @@
 "use strict"
 const md5 = require("md5")
 const Service = require("egg").Service
-let mapkey = ""
-let privatekey = ""
 class getDisService extends Service {
-  async getIdDis(pointsMsg) {
+  async getIdDis(pointsMsg, mapKey, privateKey) {
     let status = 200
     const { endId, startId, startLatLng, endLatLng } = pointsMsg
-    let results = []
+    let workResults = []
     let startStr = await this.getStartString(startLatLng)
     for (let i in endLatLng) {
       let endStr = await this.getEndString(endLatLng, i)
       let sig = md5(
-        `destination=${endStr}&key=${mapkey}&origins=${startStr}&type=1${privatekey}`
+        `destination=${endStr}&key=${mapKey}&origins=${startStr}&type=1${privateKey}`
       )
-      let temp = await this.app.curl(
-        `//restapi.amap.com/v3/distance?key=${mapkey}&origins=${startStr}&destination=${endStr}&type=1&sig=${sig}`,
-        {
-          method: "GET",
-          dataType: "json",
-        }
-      )
+      let temp
+      try {
+        temp = await this.app.curl(
+          `//restapi.amap.com/v3/distance?key=${mapKey}&origins=${startStr}&destination=${endStr}&type=1&sig=${sig}`,
+          {
+            method: "GET",
+            dataType: "json",
+          }
+        )
+      } catch (e) {
+        return { status: 0 }
+      }
       const result = temp.data.results
       for (let item of result) {
         const { origin_id, distance } = item
@@ -40,25 +43,32 @@ class getDisService extends Service {
           continue
         }
       }
-      results.push(result)
+      workResults.push(result)
     }
-    return { status, result: results }
+    return { status, workResults }
   }
-  async getMsgDis(start, end) {
-    let results = []
+  async getMsgDis(data, mapKey, privateKey) {
+    let {start,end}=data
+    let workResults = []
+    let status = 200
     let startStr = await this.getStartString(start)
     for (let i in end) {
       let endStr = await this.getEndString(end, i)
       let sig = md5(
-        `destination=${endStr}&key=${mapkey}&origins=${startStr}&type=1${privatekey}`
+        `destination=${endStr}&key=${mapKey}&origins=${startStr}&type=1${privateKey}`
       )
-      let temp = await this.app.curl(
-        `//restapi.amap.com/v3/distance?key=${mapkey}&origins=${startStr}&destination=${endStr}&type=1&sig=${sig}`,
-        {
-          method: "GET",
-          dataType: "json",
-        }
-      )
+      let temp
+      try {
+        temp = await this.app.curl(
+          `//restapi.amap.com/v3/distance?key=${mapKey}&origins=${startStr}&destination=${endStr}&type=1&sig=${sig}`,
+          {
+            method: "GET",
+            dataType: "json",
+          }
+        )
+      } catch (e) {
+        return { status: 0 }
+      }
       const result = temp.data.results
       result.map((item) => {
         item.dest_id = parseInt(i) + 1
@@ -67,11 +77,10 @@ class getDisService extends Service {
       const data = {
         result,
       }
-      results.push(data)
+      workResults.push(data)
     }
-    return results
+    return { status, workResults }
   }
-
   async getStartString(arr) {
     let str = ""
     let len = arr.length

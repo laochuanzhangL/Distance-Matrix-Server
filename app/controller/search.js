@@ -19,18 +19,22 @@ class HomeController extends Controller {
         startLatLng: points.start,
         endLatLng: points.end,
       }
-      let results = await ctx.service.getDisService.getIdDis(pointsMsg)
-      const { status, result } = results
+      let results = await ctx.service.getKeysService.getIdSearch(pointsMsg)
+      ctx.body = {
+        message: "计算成功",
+      }
+      const { status } = results
       if (results.status) {
         ctx.body = {
           status,
-          data: result,
+          data: results.workResults,
           message: "计算成功",
         }
       } else {
+        const { errorMsg } = results
         ctx.body = {
           status,
-          message: "计算失败",
+          errorMsg,
         }
       }
     }
@@ -39,10 +43,20 @@ class HomeController extends Controller {
     const { app, ctx } = this
     const data = this.ctx.request.body
     const { start, end } = data
-    let results = await ctx.service.getDisService.getMsgDis(start, end)
-    ctx.body = {
-      data: results,
-      status: 200,
+    let results = await ctx.service.getKeysService.getMsgSearch(data)
+    const { status } = results
+    if (results.status) {
+      ctx.body = {
+        status,
+        data: results.workResults,
+        message: "计算成功",
+      }
+    } else {
+      const { errorMsg } = results
+      ctx.body = {
+        status,
+        errorMsg,
+      }
     }
   }
 }
