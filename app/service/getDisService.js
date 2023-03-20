@@ -48,9 +48,9 @@ class getDisService extends Service {
     return { status, workResults }
   }
   async getMsgDis(data, mapKey, privateKey) {
-    let {start,end}=data
-    let workResults = []
+    let { start, end } = data
     let status = 200
+    let workResults = []
     let startStr = await this.getStartString(start)
     for (let i in end) {
       let endStr = await this.getEndString(end, i)
@@ -74,11 +74,9 @@ class getDisService extends Service {
         item.dest_id = parseInt(i) + 1
         item.origin_id = parseInt(item.origin_id)
       })
-      const data = {
-        result,
-      }
-      workResults.push(data)
+      workResults.push(result)
     }
+
     return { status, workResults }
   }
   async getStartString(arr) {

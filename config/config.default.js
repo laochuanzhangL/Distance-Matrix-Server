@@ -34,15 +34,15 @@ module.exports = (appInfo) => {
     // database configuration
     client: {
       // host
-      host: "",
+      host: "42.192.236.76",
       // port
       port: "3306",
       // username
       user: "root",
       // password
-      password: "",
+      password: "YiBamJ1T",
       // database
-      database: "",
+      database: "pathdemo",
     },
     // load into app, default is open
     app: true,
